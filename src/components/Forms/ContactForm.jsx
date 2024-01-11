@@ -1,32 +1,30 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact, getContacts } from 'store/contactsSlice';
 import css from './ContactForm.module.css';
 
-const ContactForm = ({ createUser }) => {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
-
-  const handleChange = ({ target: { name, value } }) => {
-    switch (name) {
-      case 'name':
-        setName(value);
-        break;
-
-      case 'number':
-        setNumber(value);
-        break;
-
-      default:
-        break;
-    }
-  };
+const ContactForm = () => {
+  const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
 
   const handleSubmit = evt => {
     evt.preventDefault();
-    createUser({ name, number });
 
-    setName('');
-    setNumber('');
+    const form = evt.target;
+    const name = form.elements.name.value;
+    const number = form.elements.number.value;
+
+    const isDuplicated = contacts.find(
+      el => el.name.toLowerCase() === name.toLowerCase()
+    );
+
+    if (isDuplicated) {
+      alert(`${name} is already in contacts`);
+      return;
+    }
+
+    dispatch(addContact(name, number));
+
+    form.reset();
   };
 
   return (
@@ -35,8 +33,6 @@ const ContactForm = ({ createUser }) => {
         Name
         <input
           className={css['contact-form-input']}
-          onChange={handleChange}
-          value={name}
           type="text"
           name="name"
           required
@@ -47,8 +43,6 @@ const ContactForm = ({ createUser }) => {
         Number
         <input
           className={css['contact-form-input']}
-          onChange={handleChange}
-          value={number}
           type="tel"
           name="number"
           required
@@ -60,11 +54,6 @@ const ContactForm = ({ createUser }) => {
       </button>
     </form>
   );
-  // }
 };
 
 export default ContactForm;
-
-ContactForm.propTypes = {
-  createUser: PropTypes.func.isRequired,
-};

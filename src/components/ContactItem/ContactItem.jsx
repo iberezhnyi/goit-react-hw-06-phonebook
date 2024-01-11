@@ -1,6 +1,12 @@
-import css from './index.module.css';
+import { useDispatch } from 'react-redux';
+import { deleteContact } from 'store/contactsSlice';
+import css from './ContactItem.module.css';
 
-const ContactItem = ({ user: { name, number, id }, deleteUser }) => {
+const ContactItem = ({ user: { name, number, id } }) => {
+  const dispatch = useDispatch();
+
+  const deleteUser = id => dispatch(deleteContact(id));
+
   return (
     <li className={css['contact-item']}>
       <p className={css['contact-text']}>
